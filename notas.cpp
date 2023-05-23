@@ -11,7 +11,7 @@ int main()
     // Evaluar la nota y mostrar el resultado correspondiente
     if (nota < 5)
     {
-        std::cout << "El alumno está suspendido." << std::endl;
+        std::cout << "El alumno esta suspendido." << std::endl;
     }
     else if (nota == 5)
     {
