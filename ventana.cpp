@@ -6,19 +6,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     // Registrar la clase de ventana
-    const char CLASS_NAME[] = "MiVentana";
+    const char *CLASS_NAME = "MiVentana";
 
-    WNDCLASSA wc = {};
+    WNDCLASS wc = {};
 
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;
     wc.lpszClassName = CLASS_NAME;
 
-    RegisterClassA(&wc);
+    RegisterClass(&wc);
 
     // Crear la ventana
-    HWND hwnd = CreateWindowExA(
-        0,
+    HWND hwnd = CreateWindow(
         CLASS_NAME,
         "Mi Ventana",
         WS_OVERLAPPEDWINDOW,
@@ -29,6 +28,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         NULL);
 
     if (hwnd == NULL)
+    {
+        return 0;
+    }
+
+    // Crear el botón
+    HWND button = CreateWindow(
+        "BUTTON",
+        "Cerrar",
+        WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+        10, 10, 100, 30,
+        hwnd,
+        NULL,
+        hInstance,
+        NULL);
+
+    if (button == NULL)
     {
         return 0;
     }
@@ -58,8 +73,22 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
+    case WM_COMMAND:
+        if (HIWORD(wParam) == BN_CLICKED)
+        {
+            HWND button = reinterpret_cast<HWND>(lParam);
+            if (button != NULL)
+            {
+                if (GetParent(button) == hwnd)
+                {
+                    // El botón ha sido pulsado
+                    SendMessage(hwnd, WM_CLOSE, 0, 0);
+                }
+            }
+        }
+        break;
     default:
-        return DefWindowProcA(hwnd, uMsg, wParam, lParam);
+        return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
     return 0;
 }
